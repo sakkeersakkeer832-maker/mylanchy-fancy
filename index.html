@@ -887,7 +887,7 @@
 
 <div
     id="productModal"
-    class="fixed inset-0 bg-white z-50 hide overflow-y-auto">
+    class="fixed inset-0 bg-white z-50 hide overflow-y-auto overscroll-contain" style="-webkit-overflow-scrolling: touch; overscroll-behavior: contain;">
 
     <div class="bg-white w-full min-h-screen relative flex flex-col">
 
@@ -2857,6 +2857,13 @@ function openProductModal(id) {
         .getElementById("productModal")
         .classList.remove("hide");
 
+    // Keep the background page fixed while the product/buy details are scrolling.
+    if (!document.body.dataset.productModalScrollLock) {
+        document.body.dataset.productModalScrollLock = "1";
+        document.body.dataset.previousBodyOverflow = document.body.style.overflow || "";
+    }
+    document.body.style.overflow = "hidden";
+
 }
 
 
@@ -2865,6 +2872,13 @@ function closeProductModal() {
     document
         .getElementById("productModal")
         .classList.add("hide");
+
+    // Restore normal page scrolling after closing the product modal.
+    if (document.body.dataset.productModalScrollLock) {
+        document.body.style.overflow = document.body.dataset.previousBodyOverflow || "";
+        delete document.body.dataset.productModalScrollLock;
+        delete document.body.dataset.previousBodyOverflow;
+    }
 
 }
 
