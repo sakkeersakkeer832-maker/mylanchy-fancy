@@ -67,6 +67,66 @@
 #notificationList{background:#fff;}
 #notificationDetailModal:not(.hide){display:flex;}
 </style>
+
+
+<style>#deliveryLocationMap{height:260px;width:100%;border-radius:14px;z-index:1}</style>
+
+
+<style id="mylanchy-pink-motion-ui">
+:root{
+  --mf-pink:#ec4899;--mf-pink-light:#f9a8d4;--mf-pink-soft:#fce7f3;
+  --mf-glow:rgba(236,72,153,.20);--mf-border:rgba(236,72,153,.20);
+}
+html{scroll-behavior:smooth}
+body{overflow-x:hidden}
+button,a,[role="button"],.btn,input,textarea,select{
+  transition:transform .22s ease,box-shadow .25s ease,border-color .22s ease,background-color .22s ease,filter .22s ease;
+}
+button:not(:disabled):hover,[role="button"]:hover,.btn:hover{
+  transform:translateY(-2px);
+  box-shadow:0 8px 22px var(--mf-glow);
+}
+button:active,[role="button"]:active,.btn:active{transform:scale(.97)}
+a:not([href="#"]):hover{filter:brightness(1.05)}
+input:focus,textarea:focus,select:focus{
+  outline:none;box-shadow:0 0 0 3px rgba(236,72,153,.13)!important;
+  border-color:#ec4899!important;
+}
+.card,.product-card,.product-item,[class*="product-card"],[class*="productCard"]{
+  transition:transform .28s cubic-bezier(.2,.8,.2,1),box-shadow .28s ease,border-color .28s ease;
+}
+.card:hover,.product-card:hover,.product-item:hover,[class*="product-card"]:hover,[class*="productCard"]:hover{
+  transform:translateY(-4px);
+  box-shadow:0 12px 28px rgba(236,72,153,.13);
+}
+img{transition:transform .35s ease,filter .35s ease}
+.card:hover img,.product-card:hover img,.product-item:hover img{transform:scale(1.025)}
+/* Soft pink ambient highlight that doesn't alter the original page colors */
+body:before{
+  content:"";position:fixed;inset:0;pointer-events:none;z-index:0;opacity:.22;
+  background:radial-gradient(circle at 0% 0%,rgba(249,168,212,.18),transparent 34%),
+             radial-gradient(circle at 100% 35%,rgba(236,72,153,.10),transparent 32%);
+}
+body>*{position:relative}
+body>script,body>style{position:static}
+.mf-reveal{opacity:0;transform:translateY(16px);transition:opacity .55s ease,transform .55s cubic-bezier(.2,.8,.2,1)}
+.mf-reveal.mf-visible{opacity:1;transform:translateY(0)}
+.mf-ripple{position:absolute;border-radius:50%;pointer-events:none;transform:scale(0);animation:mfRipple .55s ease-out forwards;background:rgba(255,255,255,.42)}
+@keyframes mfRipple{to{transform:scale(1);opacity:0}}
+@keyframes mfSoftPulse{0%,100%{box-shadow:0 0 0 0 rgba(236,72,153,0)}50%{box-shadow:0 0 0 5px rgba(236,72,153,.08)}}
+@keyframes mfFloat{0%,100%{transform:translateY(0)}50%{transform:translateY(-3px)}}
+@keyframes mfShimmer{0%{background-position:-200% 0}100%{background-position:200% 0}}
+/* Respect accessibility settings */
+@media(prefers-reduced-motion:reduce){
+ html{scroll-behavior:auto}
+ *,*:before,*:after{animation-duration:.01ms!important;animation-iteration-count:1!important;transition-duration:.01ms!important}
+ .mf-reveal{opacity:1;transform:none}
+}
+@media(max-width:640px){
+ .card:hover,.product-card:hover,.product-item:hover,[class*="product-card"]:hover{transform:translateY(-2px)}
+}
+</style>
+
 </head>
 
 <body class="bg-gradient-to-br from-slate-200 via-blue-100 to-indigo-200 text-gray-800 antialiased min-h-screen flex flex-col">
@@ -875,7 +935,16 @@
       <label class="block text-xs font-semibold text-gray-600">Date of birth</label>
       <input id="profileDob" type="date" class="w-full border rounded-xl p-3 text-sm">
       <label class="block text-xs font-semibold text-gray-600">Delivery address</label>
-      <textarea id="profileAddress" required maxlength="700" rows="3" class="w-full border rounded-xl p-3 text-sm" placeholder="House name/number, street, place, district, PIN code"></textarea>
+      <p class="text-xs text-gray-500">Select a location on the map or enter your address manually. Selecting a pin can fill available location details; you can edit any field.</p>
+      <label class="block text-xs font-semibold text-gray-600">House / Flat Number *</label><input id="profileHouseNumber" maxlength="120" class="w-full border rounded-xl p-3 text-sm" placeholder="House name / Flat number">
+      <label class="block text-xs font-semibold text-gray-600">Street / Road</label><input id="profileStreet" maxlength="180" class="w-full border rounded-xl p-3 text-sm" placeholder="Street / Road name">
+      <label class="block text-xs font-semibold text-gray-600">Area / Locality</label><input id="profileLocality" maxlength="180" class="w-full border rounded-xl p-3 text-sm" placeholder="Area / Locality">
+      <div class="grid grid-cols-1 sm:grid-cols-2 gap-3"><div><label class="block text-xs font-semibold text-gray-600">Town / City</label><input id="profileCity" maxlength="100" class="w-full border rounded-xl p-3 text-sm" placeholder="Town / City"></div><div><label class="block text-xs font-semibold text-gray-600">District</label><input id="profileDistrict" maxlength="100" class="w-full border rounded-xl p-3 text-sm" placeholder="District"></div></div>
+      <div class="grid grid-cols-1 sm:grid-cols-2 gap-3"><div><label class="block text-xs font-semibold text-gray-600">State</label><input id="profileState" maxlength="100" class="w-full border rounded-xl p-3 text-sm" placeholder="State"></div><div><label class="block text-xs font-semibold text-gray-600">PIN Code *</label><input id="profilePincode" required inputmode="numeric" pattern="[0-9]{6}" maxlength="6" class="w-full border rounded-xl p-3 text-sm" placeholder="6-digit PIN code"></div></div>
+      <label class="block text-xs font-semibold text-gray-600">Landmark (optional)</label><input id="profileLandmark" maxlength="180" class="w-full border rounded-xl p-3 text-sm" placeholder="Near / opposite to...">
+      <label class="block text-xs font-semibold text-gray-600">Full Address (auto-filled; editable)</label><textarea id="profileAddress" required maxlength="700" rows="3" class="w-full border rounded-xl p-3 text-sm" placeholder="Full delivery address"></textarea>
+      <p class="text-xs text-gray-500">Please enter your delivery address manually.</p>
+      <input type="hidden" id="profileLatitude"><input type="hidden" id="profileLongitude">
       <label class="block text-xs font-semibold text-gray-600">Email address</label>
       <input id="profileEmail" readonly class="w-full border rounded-xl p-3 text-sm bg-gray-100 text-gray-500">
       <button type="submit" class="w-full bg-pink-600 hover:bg-pink-700 text-white font-bold py-3 rounded-xl text-sm">Save Changes</button>
@@ -1594,6 +1663,73 @@ async function cancelCustomerOrder(orderId) {
     }
 }
 
+let deliveryLocationMap = null, deliveryLocationMarker = null, deliveryGeocoder = null;
+function initDeliveryLocationMap(lat, lng) {
+  const el = document.getElementById("deliveryLocationMap"); if (!el || !window.google || !google.maps) return;
+  const hasPin = Number.isFinite(Number(lat)) && lat !== null && lat !== "" && Number.isFinite(Number(lng)) && lng !== null && lng !== "";
+  const center = hasPin ? {lat:Number(lat), lng:Number(lng)} : {lat:10.1632, lng:76.6413};
+  if (!deliveryLocationMap) {
+    deliveryLocationMap = new google.maps.Map(el, {center, zoom:hasPin ? 16 : 8, mapTypeControl:false, streetViewControl:false, fullscreenControl:true});
+    deliveryGeocoder = new google.maps.Geocoder();
+    deliveryLocationMap.addListener("click", e => { if (e.latLng) setDeliveryLocationPin(e.latLng.lat(), e.latLng.lng(), true); });
+  } else { deliveryLocationMap.setCenter(center); deliveryLocationMap.setZoom(hasPin ? 16 : 8); }
+  if (hasPin) setDeliveryLocationPin(Number(lat), Number(lng), false);
+}
+function setDeliveryLocationPin(lat, lng, fillAddress=true) {
+  if (!deliveryLocationMap || !window.google || !google.maps) return;
+  const position = {lat:Number(lat), lng:Number(lng)};
+  if (!deliveryLocationMarker) deliveryLocationMarker = new google.maps.Marker({position, map:deliveryLocationMap, draggable:true, title:"Delivery location"});
+  else { deliveryLocationMarker.setPosition(position); deliveryLocationMarker.setMap(deliveryLocationMap); }
+  google.maps.event.clearListeners(deliveryLocationMarker, "dragend");
+  deliveryLocationMarker.addListener("dragend", e => { if(e.latLng) setDeliveryLocationFields(e.latLng.lat(), e.latLng.lng(), true); });
+  setDeliveryLocationFields(lat,lng,fillAddress);
+}
+function setDeliveryLocationFields(lat,lng,fillAddress=true) {
+  const latEl=document.getElementById("profileLatitude"), lngEl=document.getElementById("profileLongitude");
+  if(latEl) latEl.value=Number(lat).toFixed(7); if(lngEl) lngEl.value=Number(lng).toFixed(7);
+  const statusEl=document.getElementById("deliveryLocationStatus");
+  if(statusEl) statusEl.textContent=`Location marked (${Number(lat).toFixed(5)}, ${Number(lng).toFixed(5)}). Finding address…`;
+  if (!fillAddress) return;
+  if (!deliveryGeocoder) {
+    if(statusEl) statusEl.textContent="Location marked, but address lookup is unavailable. Check your Google Maps API setup or enter the address manually.";
+    return;
+  }
+  deliveryGeocoder.geocode({location:{lat:Number(lat),lng:Number(lng)}}, (results,status) => {
+    if(status!=="OK" || !results || !results.length) {
+      if(statusEl) statusEl.textContent=`Location marked, but Google could not find the address (${status}). Check that Geocoding is enabled for your API key, or enter the address manually.`;
+      return;
+    }
+    // Prefer the most detailed result with address components, falling back to the first result.
+    const result=results.find(r=>(r.address_components||[]).length>0) || results[0];
+    const comps=result.address_components||[];
+    const get=(...types)=>{const c=comps.find(x=>types.some(t=>x.types.includes(t)));return c?c.long_name:"";};
+    const setFromMap=(id,value)=>{const el=document.getElementById(id);if(el && value)el.value=value;};
+    const street=[get("street_number"),get("route")].filter(Boolean).join(" ");
+    setFromMap("profileStreet",street || get("premise","subpremise"));
+    setFromMap("profileLocality",get("sublocality_level_1","sublocality_level_2","sublocality","neighborhood","administrative_area_level_3"));
+    setFromMap("profileCity",get("locality","postal_town","administrative_area_level_3","administrative_area_level_2"));
+    setFromMap("profileDistrict",get("administrative_area_level_2","administrative_area_level_3"));
+    setFromMap("profileState",get("administrative_area_level_1"));
+    setFromMap("profilePincode",get("postal_code"));
+    const addr=document.getElementById("profileAddress"); if(addr && result.formatted_address) addr.value=result.formatted_address;
+    if(statusEl) statusEl.textContent="Address filled from the map. Please check the details; house/flat number and landmark may need to be entered manually.";
+  });
+}
+function clearDeliveryLocation() { if(deliveryLocationMarker){deliveryLocationMarker.setMap(null);deliveryLocationMarker=null;} document.getElementById("profileLatitude").value="";document.getElementById("profileLongitude").value="";document.getElementById("deliveryLocationStatus").textContent="Map pin removed. You can still type the address below."; }
+function useMyDeliveryLocation() {
+  if (!navigator.geolocation) { alert("Your browser does not support location. Please tap the map to mark your location."); return; }
+  navigator.geolocation.getCurrentPosition(pos => { const lat=pos.coords.latitude,lng=pos.coords.longitude; if(!deliveryLocationMap) initDeliveryLocationMap(); if(deliveryLocationMap){deliveryLocationMap.setCenter({lat,lng});deliveryLocationMap.setZoom(17);setDeliveryLocationPin(lat,lng,true);} }, () => alert("Location permission was not granted. Please allow location access or tap the map manually."), {enableHighAccuracy:true,timeout:10000});
+}
+window.initDeliveryLocationGoogleMap = function() { initDeliveryLocationMap(document.getElementById("profileLatitude")?.value, document.getElementById("profileLongitude")?.value); };
+document.addEventListener("DOMContentLoaded",()=>{
+  if (GOOGLE_MAPS_API_KEY && !GOOGLE_MAPS_API_KEY.includes("PASTE_YOUR_GOOGLE_MAPS_API_KEY_HERE")) {
+    loadGoogleMapsWithKey(GOOGLE_MAPS_API_KEY);
+  } else {
+    const st=document.getElementById("deliveryLocationStatus");
+    if(st) st.textContent="Add your Google Maps API key in the code constant GOOGLE_MAPS_API_KEY to enable the map. You can still type the address manually.";
+  }
+});
+
 async function openAccountSettings() {
     if (!currentUser) { openAuthModal("login"); return; }
     try {
@@ -1603,13 +1739,16 @@ async function openAccountSettings() {
         document.getElementById("profilePhone").value = profile.phone || "";
         document.getElementById("profileDob").value = profile.dateOfBirth || "";
         document.getElementById("profileAddress").value = profile.address || "";
+        for (const [id,key] of [["profileHouseNumber","houseNumber"],["profileStreet","street"],["profileLocality","locality"],["profileCity","city"],["profileDistrict","district"],["profileState","state"],["profilePincode","pincode"],["profileLandmark","landmark"]]) { const field=document.getElementById(id); if(field) field.value=profile[key] || ""; }
+        document.getElementById("profileLatitude").value = profile.latitude ?? "";
+        document.getElementById("profileLongitude").value = profile.longitude ?? "";
         document.getElementById("profileEmail").value = currentUser.email || "";
         const modal = document.getElementById("accountModal");
         const panel = document.getElementById("accountPanel");
         modal.classList.remove("hide");
         // Opening the Account icon shows only the two tabs; fields appear after clicking Account Settings.
         switchAccountTab("none");
-        requestAnimationFrame(() => panel.classList.remove("translate-x-full"));
+        requestAnimationFrame(() => { panel.classList.remove("translate-x-full"); setTimeout(() => initDeliveryLocationMap(profile.latitude, profile.longitude), 350); });
     } catch (error) {
         console.error(error);
         alert("Could not load account settings. Please try again.");
@@ -1631,15 +1770,29 @@ async function saveAccountSettings(event) {
     const name = document.getElementById("profileName").value.trim();
     const phone = document.getElementById("profilePhone").value.trim();
     const dateOfBirth = document.getElementById("profileDob").value;
-    const address = document.getElementById("profileAddress").value.trim();
-    if (!name || !phone || !address) { alert("Please enter your name, contact number, and delivery address."); return; }
+    const houseNumber = document.getElementById("profileHouseNumber").value.trim();
+    const street = document.getElementById("profileStreet").value.trim();
+    const locality = document.getElementById("profileLocality").value.trim();
+    const city = document.getElementById("profileCity").value.trim();
+    const district = document.getElementById("profileDistrict").value.trim();
+    const state = document.getElementById("profileState").value.trim();
+    const pincode = document.getElementById("profilePincode").value.trim();
+    const landmark = document.getElementById("profileLandmark").value.trim();
+    const addressParts = [houseNumber, street, locality, city, district, state, pincode, landmark].filter(Boolean);
+    let address = document.getElementById("profileAddress").value.trim();
+    if (!address && addressParts.length) address = addressParts.join(", ");
+    else if (addressParts.length) address = addressParts.join(", ");
+    document.getElementById("profileAddress").value = address;
+    const latitude = document.getElementById("profileLatitude").value ? Number(document.getElementById("profileLatitude").value) : null;
+    const longitude = document.getElementById("profileLongitude").value ? Number(document.getElementById("profileLongitude").value) : null;
+    if (!name || !phone || !houseNumber || !pincode || !/^[0-9]{6}$/.test(pincode) || !address) { alert("Please enter your name, phone, house/flat number, and valid 6-digit PIN code."); return; }
     try {
         const profileRef = db.collection("users").doc(currentUser.uid);
         const previousSnap = await profileRef.get();
         const previousProfile = previousSnap.exists ? previousSnap.data() : {};
 
         await profileRef.set({
-            name, phone, dateOfBirth, address, email: currentUser.email || "",
+            name, phone, dateOfBirth, address, houseNumber, street, locality, city, district, state, pincode, landmark, latitude, longitude, email: currentUser.email || "",
             role: isAdmin ? "admin" : "customer",
             updatedAt: firebase.firestore.FieldValue.serverTimestamp()
         }, { merge: true });
@@ -3319,7 +3472,7 @@ async function placeCodOrder() {
         const order = {
             customerId: currentUser.uid,
             customerName: String(profile.name || currentUser.displayName || currentUser.email || "Customer"),
-            phone: String(profile.phone), address: String(profile.address), email: String(currentUser.email || ""),
+            phone: String(profile.phone), address: String(profile.address), latitude: profile.latitude ?? null, longitude: profile.longitude ?? null, email: String(currentUser.email || ""),
             items, total, currency: "INR", paymentMethod: "COD", paymentStatus: "pending", orderStatus: "new",
             createdAt: firebase.firestore.FieldValue.serverTimestamp()
         };
@@ -4598,6 +4751,48 @@ button:hover,[role="button"]:hover,.btn:hover,a.button:hover{box-shadow:0 7px 18
 #notificationDetailModal, #notificationDetailModal > div, #notificationDetailModal [class*="bg-pink-"] { background:#ffffff !important; background-image:none !important; color:#1f2937 !important; }
 #notificationDetailModal h3, #notificationDetailModal p { color:#1f2937 !important; }
 </style>
+
+
+
+<script id="mylanchy-pink-motion-enhancements">
+(function(){
+  function initPinkMotion(){
+    document.body.classList.add('mylanchy-pink-motion');
+    // Reveal content gently as it enters view; avoid touching forms and dialogs.
+    var candidates=document.querySelectorAll('main section, main article, .product-card, .product-item, [class*="product-card"], [class*="productCard"]');
+    if('IntersectionObserver' in window){
+      var observer=new IntersectionObserver(function(entries){
+        entries.forEach(function(entry){
+          if(entry.isIntersecting){entry.target.classList.add('mf-visible');observer.unobserve(entry.target);}
+        });
+      },{threshold:.08});
+      candidates.forEach(function(el){
+        if(el.closest('[role="dialog"],.modal')) return;
+        el.classList.add('mf-reveal');observer.observe(el);
+      });
+    }
+    // Lightweight click ripple for buttons only; existing click handlers remain untouched.
+    document.addEventListener('click',function(event){
+      var btn=event.target.closest('button,[role="button"],.btn');
+      if(!btn || btn.disabled || btn.dataset.noRipple==='true') return;
+      var rect=btn.getBoundingClientRect();
+      var size=Math.max(rect.width,rect.height)*1.35;
+      var ripple=document.createElement('span');
+      ripple.className='mf-ripple';
+      ripple.style.width=size+'px';ripple.style.height=size+'px';
+      ripple.style.left=(event.clientX-rect.left-size/2)+'px';
+      ripple.style.top=(event.clientY-rect.top-size/2)+'px';
+      var oldPosition=getComputedStyle(btn).position;
+      if(oldPosition==='static') btn.style.position='relative';
+      btn.style.overflow='hidden';
+      btn.appendChild(ripple);
+      window.setTimeout(function(){ripple.remove();},600);
+    },true);
+  }
+  if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',initPinkMotion);
+  else initPinkMotion();
+})();
+</script>
 
 </body>
 </html>
